@@ -1,40 +1,17 @@
 import pandas as pd
-from collections import Counter
-import random
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
-from Functions.functions import display_plot
+from Functions.functions import check_missing_data
+from Functions.functions import display_all_plots
+from Functions.functions import data_preprocessing
+from Functions.functions import get_cosine_similarities
 
-movieToFindRecommendation = 'The Dark Knight'
+
 file_path = 'imdb_top_1000.csv'
 movies_df = pd.read_csv(file_path)
+check_missing_data(movies_df)
+movies_df = data_preprocessing(movies_df)
+display_all_plots(movies_df)
 
-# Sprawdzenie brakujących danych
-missing_data = movies_df.isnull().sum()
-
-# Procent brakujących danych w każdej kolumnie
-percent_missing = (missing_data / len(movies_df)) * 100
-
-missing_data_df = pd.DataFrame({'Kolumna': missing_data.index, 'Brakujące wartości': missing_data.values, 'Procent brakujących': percent_missing.values})
-print(missing_data_df)
-
-# Ustawienie brakujących wartości w 'Certificate' na 'Nieznany'
-movies_df['Certificate'].fillna('Nieznany', inplace=True)
-
-# Uzupełnienie brakujących wartości w 'Meta_score' przez średnią
-meta_score_mean = movies_df['Meta_score'].mean()
-movies_df['Meta_score'].fillna(meta_score_mean, inplace=True)
-
-# Usunięcie kolumny 'Gross'
-movies_df.drop('Gross', axis=1, inplace=True)
-
-# Sprawdzenie, czy operacje zostały wykonane poprawnie
-print(movies_df.isnull().sum()) # Powinno nie wykazywać brakujących danych
-
-display_plot(movies_df)
+movieToFindRecommendation = 'The Dark Knight'
 
 # Wybór losowego filmu
 random_movie = movies_df.loc[movies_df['Series_Title'] == movieToFindRecommendation]
@@ -50,30 +27,8 @@ selected_movie_info = {
 
 print(selected_movie_info)
 
+cosine_similarities = get_cosine_similarities(movies_df)
 
-# Przygotowanie danych
-feature_columns = ['Genre', 'Director', 'IMDB_Rating', 'Meta_score']
-
-# Tworzenie DataFrame z wybranymi kolumnami
-features_df = movies_df[feature_columns]
-
-# Kodowanie "one-hot" dla kategorialnych danych ('Genre' i 'Director')
-one_hot_encoder = ColumnTransformer(transformers=[('cat', OneHotEncoder(sparse_output=False), ['Genre', 'Director'])], remainder='passthrough')
-
-# Transformacja danych
-transformed_features = one_hot_encoder.fit_transform(features_df)
-
-# Normalizacja ocen numerycznych ('IMDB_Rating' i 'Meta_score')
-scaler = MinMaxScaler()
-transformed_features = scaler.fit_transform(transformed_features)
-
-# Sprawdzenie przekształconych danych
-transformed_features.shape
-
-
-
-# Obliczenie podobieństwa kosinusowego
-cosine_similarities = cosine_similarity(transformed_features)
 
 # Pobranie indeksu wybranego filmu
 selected_movie_index = random_movie.index[0]
