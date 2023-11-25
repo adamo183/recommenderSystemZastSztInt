@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+from collections import Counter
+import pandas as pd
 
 def display_plot(movies_df, ):
     # Ustawienie stylu wykresów

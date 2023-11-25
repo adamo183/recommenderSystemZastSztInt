@@ -6,6 +6,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+from Functions.functions import display_plot
 
 movieToFindRecommendation = 'The Dark Knight'
 file_path = 'imdb_top_1000.csv'
@@ -33,7 +34,7 @@ movies_df.drop('Gross', axis=1, inplace=True)
 # Sprawdzenie, czy operacje zostały wykonane poprawnie
 print(movies_df.isnull().sum()) # Powinno nie wykazywać brakujących danych
 
-display_plot()
+display_plot(movies_df)
 
 # Wybór losowego filmu
 random_movie = movies_df.loc[movies_df['Series_Title'] == movieToFindRecommendation]
