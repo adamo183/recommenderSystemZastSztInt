@@ -5,8 +5,18 @@ from Functions.functions import data_preprocessing
 from Functions.functions import get_cosine_similarities
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 file_path = 'imdb_top_1000.csv'
 movies_df = pd.read_csv(file_path)
